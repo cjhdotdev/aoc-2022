@@ -1,0 +1,41 @@
+name: Run static code analysis
+on:
+  pull_request:
+    types: [ opened, synchronize ]
+    branches:
+      - main
+jobs:
+  phpstan:
+    name: phpstan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, intl, gd, exif
+          coverage: none
+      - name: Get composer cache directory
+        id: composer-cache
+        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+      - name: Cache composer dependencies
+        uses: actions/cache@v2
+        id: phpstan-composer-cache
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: composer-${{ hashFiles('**/composer.json') }}
+      - name: Cache PHP vendor dependencies
+        uses: actions/cache@v2
+        id: phpstan-vendor-cache
+        with:
+          path: vendor
+          key: vendor-${{ hashFiles('**/composer.lock') }}
+      - name: Install composer dependencies
+        if: steps.phpstan-composer-cache.outputs.cache-hit != 'true'
+        run: composer update -q --no-ansi --no-interaction --no-progress --prefer-dist
+      - name: Run PHPStan
+        run: ./vendor/bin/phpstan --error-format=github

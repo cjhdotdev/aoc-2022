@@ -1,0 +1,49 @@
+name: Run test suite
+on:
+  pull_request:
+    types: [ opened, synchronize ]
+    branches:
+      - main
+jobs:
+  php-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.2
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, intl, gd, exif
+          coverage: none
+      - name: Setup problem matchers
+        run: |
+          echo "::add-matcher::${{ runner.tool_cache }}/php.json"
+          echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
+      - name: Get composer cache directory
+        id: composer-cache
+        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+      - name: Cache composer dependencies
+        uses: actions/cache@v2
+        id: test-composer-cache
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: composer-${{ hashFiles('**/composer.json') }}
+      - name: Cache PHP vendor directory
+        uses: actions/cache@v2
+        id: test-vendor-cache
+        with:
+          path: vendor
+          key: vendor-${{ hashFiles('**/composer.lock') }}
+      - name: Install composer dependencies
+        if: steps.test-composer-cache.outputs.cache-hit != 'true'
+        run: composer update -q --no-ansi --no-interaction --no-progress --prefer-dist
+      - name: Prepare application for testing
+        run: |
+          php -r "file_exists('.env') || copy('.env.example', '.env');"; \
+          php artisan key:generate; \
+          chmod -R 777 storage bootstrap/cache
+      - name: Run test suite
+        run: vendor/bin/pest --parallel

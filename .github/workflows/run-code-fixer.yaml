@@ -1,0 +1,44 @@
+name: Fix PHP code style issues
+on:
+  pull_request:
+    types: [ opened, synchronize ]
+    branches:
+      - main
+jobs:
+  php-code-styling:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, intl, gd, exif
+          coverage: none
+      - name: Get composer cache directory
+        id: composer-cache
+        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+      - name: Cache composer dependencies
+        id: pint-composer-cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: composer-${{ hashFiles('**/composer.json') }}
+      - name: Cache PHP vendor dependencies
+        uses: actions/cache@v2
+        id: pint-vendor-cache
+        with:
+          path: vendor
+          key: vendor-${{ hashFiles('**/composer.lock') }}
+      - name: Install composer dependencies
+        if: steps.pint-composer-cache.outputs.cache-hit != 'true'
+        run: composer update -q --no-ansi --no-interaction --no-progress --prefer-dist
+      - name: Run pint
+        run: ./vendor/bin/pint
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Fix code styling
