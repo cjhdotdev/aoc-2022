@@ -34,6 +34,9 @@ class DayFiveCommand extends BaseCommand
         $this->output->info(sprintf('The crates on the top of the stacks are: %s',
             $dayFiveService->findTopCratesForInput($columnsAndMoves)
         ));
+        $this->output->info(sprintf('The crates on the top using the multi crate crane are: %s',
+            $dayFiveService->findTopCratesForInput($columnsAndMoves, true)
+        ));
 
         return self::SUCCESS;
     }

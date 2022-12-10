@@ -154,6 +154,60 @@ it('alters the column collection based on some movements', function (
     ],
 ]);
 
+it('alters the column collection based on some movements with a multi-crate crane', function (
+    Collection $rows,
+    Collection $movements,
+    array $expectedColumns,
+) {
+    $columnsCollection = new ColumnsCollection();
+
+    $rows->each(fn ($row) => $columnsCollection->addRow($row));
+    $movements->each(fn ($movement) => $columnsCollection->transformWithMovement($movement));
+
+    expect($columnsCollection)
+        ->toBeInstanceOf(ColumnsCollection::class)
+        ->toMatchArray($expectedColumns);
+})->with([
+    [
+        collect([
+            new Collection([' ', 'B', 'C', ' ']),
+            new Collection(['E', 'F', 'G', ' ']),
+            new Collection(['I', 'J', 'K', 'L']),
+            new Collection(['M', 'N', 'O', 'P']),
+        ]),
+        collect([
+            new MovementDTO(2, 2, 4, true),
+        ]),
+        [
+            ['E', 'I', 'M'],
+            ['J', 'N'],
+            ['C', 'G', 'K', 'O'],
+            ['B', 'F', 'L', 'P'],
+        ],
+    ],
+    [
+        collect([
+            new Collection(['A', ' ', ' ', ' ']),
+            new Collection(['E', ' ', ' ', ' ']),
+            new Collection(['I', ' ', 'K', ' ']),
+            new Collection(['M', 'N', 'O', ' ']),
+            new Collection(['Q', 'R', 'S', ' ']),
+            new Collection(['U', 'V', 'W', 'X']),
+        ]),
+        collect([
+            new MovementDTO(5, 1, 4, true),
+            new MovementDTO(2, 2, 4, true),
+            new MovementDTO(1, 3, 4, true),
+        ]),
+        [
+            ['U'],
+            ['V'],
+            ['O', 'S', 'W'],
+            ['K', 'N', 'R', 'A', 'E', 'I', 'M', 'Q', 'X'],
+        ],
+    ],
+]);
+
 it('can identify the crate on the top of each column', function (
     ColumnsCollection $columns,
     array $expectedTopCrates,

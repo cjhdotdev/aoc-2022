@@ -36,13 +36,16 @@ class ColumnsCollection extends Collection
             $cratesToMove = collect([$cratesToMove]);
         }
 
+        if (! $movement->multiCrateCrane) {
+            $cratesToMove = $cratesToMove->reverse();
+        }
+
         /** @var Collection<int, Collection<int, string>> $existingColumn */
         $existingColumn = $this->get($movement->toColumn - 1);
 
         $this->put(
             $movement->toColumn - 1,
             $cratesToMove
-                ->reverse()
                 ->concat($existingColumn)
                 ->values()
         );

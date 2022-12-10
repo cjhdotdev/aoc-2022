@@ -10,8 +10,12 @@ use Illuminate\Support\Str;
 
 class DayFiveService
 {
-    public function findTopCratesForInput(string $input): string
+    private bool $isMultiCrateCrane = false;
+
+    public function findTopCratesForInput(string $input, bool $isMultiCrateCrane = false): string
     {
+        $this->isMultiCrateCrane = $isMultiCrateCrane;
+
         $columnsMoves = $this->parseColumnsAndMoves($input);
         $columnsMoves->movements->each(fn ($move) => $columnsMoves->columns->transformWithMovement($move));
 
@@ -60,6 +64,7 @@ class DayFiveService
                 intval($matches->get(0)),
                 intval($matches->get(1)),
                 intval($matches->get(2)),
+                $this->isMultiCrateCrane,
             ));
     }
 }

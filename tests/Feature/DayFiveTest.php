@@ -21,5 +21,6 @@ it('finds the crates on the top of each stack after movements', function () {
 
     expect($this->artisan('aoc:day-05 crates.txt'))
         ->assertSuccessful()
-        ->expectsOutputToContain('The crates on the top of the stacks are: POFAIMSW');
+        ->expectsOutputToContain('The crates on the top of the stacks are: POFAIMSW')
+        ->expectsOutputToContain('The crates on the top using the multi crate crane are: PHFAAMDW');
 });

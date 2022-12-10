@@ -8,6 +8,7 @@ final readonly class MovementDTO
         public int $count,
         public int $fromColumn,
         public int $toColumn,
+        public bool $multiCrateCrane = false,
     ) {
         //
     }
