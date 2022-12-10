@@ -8,7 +8,7 @@ use App\Domain\DayTwo\Enums\RockPaperScissorsEnum;
 use App\Domain\DayTwo\Enums\WinLoseDrawEnum;
 use App\Domain\DayTwo\Services\DayTwoService;
 
-beforeEach(fn() => $this->service = new DayTwoService());
+beforeEach(fn () => $this->service = new DayTwoService());
 
 it('correctly identifies rock, paper and scissors from the code', function (
     string $code,

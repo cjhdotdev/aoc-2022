@@ -6,7 +6,7 @@ use App\Domain\DayThree\DTO\PackagingDTO;
 use App\Domain\DayThree\Services\DayThreeService;
 use Illuminate\Support\Collection;
 
-beforeEach(fn() => $this->service = new DayThreeService());
+beforeEach(fn () => $this->service = new DayThreeService());
 
 it('splits the packing list into equal parts', function () {
     expect($this->service->splitPackagingList('abcdefzyxwvu'))

@@ -4,7 +4,7 @@ namespace Tests\Unit;
 
 use App\Domain\DayOne\Services\DayOneService;
 
-beforeEach(fn() => $this->service = new DayOneService());
+beforeEach(fn () => $this->service = new DayOneService());
 
 it('calculates the calories for a single elf', function () {
     expect($this->service->calculateForElf("10\n20\n30"))
