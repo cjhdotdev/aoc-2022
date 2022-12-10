@@ -32,6 +32,7 @@ class Kernel extends ConsoleKernel
             app_path('Domain/DayTwo/Commands'),
             app_path('Domain/DayThree/Commands'),
             app_path('Domain/DayFour/Commands'),
+            app_path('Domain/DayFive/Commands'),
         ]);
 
         require base_path('routes/console.php');

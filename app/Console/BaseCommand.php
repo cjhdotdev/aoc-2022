@@ -15,6 +15,6 @@ abstract class BaseCommand extends Command
             throw new \RuntimeException('The specified file does not exist');
         }
 
-        return trim(Storage::get($inputFile) ?? '');
+        return Storage::get($inputFile) ?? '';
     }
 }

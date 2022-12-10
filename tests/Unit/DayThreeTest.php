@@ -6,12 +6,10 @@ use App\Domain\DayThree\DTO\PackagingDTO;
 use App\Domain\DayThree\Services\DayThreeService;
 use Illuminate\Support\Collection;
 
-beforeEach(function () {
-    $this->dayThreeService = new DayThreeService();
-});
+beforeEach(fn () => $this->service = new DayThreeService());
 
 it('splits the packing list into equal parts', function () {
-    expect($this->dayThreeService->splitPackagingList('abcdefzyxwvu'))
+    expect($this->service->splitPackagingList('abcdefzyxwvu'))
         ->toBeInstanceOf(PackagingDTO::class)
         ->compartmentOne->toBeInstanceOf(Collection::class)->toMatchArray(['a', 'b', 'c', 'd', 'e', 'f'])
         ->compartmentTwo->toBeInstanceOf(Collection::class)->toMatchArray(['z', 'y', 'x', 'w', 'v', 'u']);
@@ -22,7 +20,7 @@ it('finds items duplicated in each compartment', function () {
         collect(['a', 'b', 'c', 'd', 'e', 'f']),
         collect(['z', 'y', 'x', 'c', 'v', 'w'])
     );
-    expect($this->dayThreeService->findDuplicatedItem($packagingDTO))
+    expect($this->service->findDuplicatedItem($packagingDTO))
         ->toBeString()
         ->toHaveLength(1)
         ->toEqual('c');
@@ -35,7 +33,7 @@ it('calculates the priority of an item', function (
     string $item,
     int $expectedPriority,
 ) {
-    expect($this->dayThreeService->findPriorityForItem($item))
+    expect($this->service->findPriorityForItem($item))
         ->toBeInt()
         ->toEqual($expectedPriority);
 })->with([
@@ -49,14 +47,14 @@ it('calculates the priority of an item', function (
 
 it('calculates priorities for multiple rucksacks', function () {
     $rucksacks = "abczbx\nTHEEND\nHELLOWORLD\ntEsTiNgPinGeRS";
-    expect($this->dayThreeService->calculatePriorityForRucksacks($rucksacks))
+    expect($this->service->calculatePriorityForRucksacks($rucksacks))
         ->toBeInt()
         ->toEqual(80);
 });
 
 it('gets the rucksacks in batches of three', function () {
     $rucksacks = "abc\ndef\nghi\njkl\nmno\npqr\nstu\nvwx\nyza";
-    $groups = $this->dayThreeService->splitRucksacksIntoGroups($rucksacks);
+    $groups = $this->service->splitRucksacksIntoGroups($rucksacks);
     expect($groups)
         ->toBeInstanceOf(Collection::class)
         ->toHaveCount(3)
@@ -71,7 +69,7 @@ it('finds the common item amongst a group of rucksacks', function (
     Collection $group,
     string $expectedItem
 ) {
-    expect($this->dayThreeService->findCommonItemInGroup($group))
+    expect($this->service->findCommonItemInGroup($group))
         ->toBeString()
         ->toEqual($expectedItem);
 })->with([
@@ -80,7 +78,7 @@ it('finds the common item amongst a group of rucksacks', function (
 ]);
 
 it('calculates the priority for groups of rucksacks', function () {
-    expect($this->dayThreeService->calculatePriorityForGroups("abc\ndag\ntra\nsZrTGbd\nlPtgZBD\nStgZeQdk"))
+    expect($this->service->calculatePriorityForGroups("abc\ndag\ntra\nsZrTGbd\nlPtgZBD\nStgZeQdk"))
         ->toBeInt()
         ->toEqual(53);
 });

@@ -8,6 +8,8 @@ use App\Domain\DayTwo\Enums\RockPaperScissorsEnum;
 use App\Domain\DayTwo\Enums\WinLoseDrawEnum;
 use App\Domain\DayTwo\Services\DayTwoService;
 
+beforeEach(fn () => $this->service = new DayTwoService());
+
 it('correctly identifies rock, paper and scissors from the code', function (
     string $code,
     RockPaperScissorsEnum $sign
@@ -30,8 +32,7 @@ it('parses the code into two hands', function (
     RockPaperScissorsEnum $expectedOpponentsHand,
     RockPaperScissorsEnum $expectedYourHand
 ) {
-    $dayTwoService = new DayTwoService();
-    expect($dayTwoService->parseHandsCodes($inputCodes))
+    expect($this->service->parseHandsCodes($inputCodes))
         ->toBeInstanceOf(HandDTO::class)
         ->opponentsHand->toEqual($expectedOpponentsHand)
         ->yourHand->toEqual($expectedYourHand);
@@ -55,9 +56,8 @@ it('can pick the outcome of the hand', function (
     RockPaperScissorsEnum $yourHand,
     WinLoseDrawEnum $expectedOutcome
 ) {
-    $dayTwoService = new DayTwoService();
     $handDTO = new HandDTO($opponentsHand, $yourHand);
-    expect($dayTwoService->findOutcome($handDTO))
+    expect($this->service->findOutcome($handDTO))
         ->toEqual($expectedOutcome);
 })->with([
     [RockPaperScissorsEnum::Rock, RockPaperScissorsEnum::Paper, WinLoseDrawEnum::Win],
@@ -79,9 +79,8 @@ it('calculates hand two score based on winning scenario', function (
     RockPaperScissorsEnum $yourHand,
     int $expectedScore
 ) {
-    $dayTwoService = new DayTwoService();
     $handDTO = new HandDTO($opponentsHand, $yourHand);
-    expect($dayTwoService->calculateScoreFromHand($handDTO))
+    expect($this->service->calculateScoreFromHand($handDTO))
         ->toBeInt()
         ->toEqual($expectedScore);
 })->with([
@@ -100,8 +99,7 @@ it('calculates hand two score based on winning scenario', function (
 ]);
 
 it('calculates the total scores for a list of hands', function () {
-    $dayTwoService = new DayTwoService();
-    expect($dayTwoService->calculateScoreFromHandList("A X\nA Y\nA Z\nB X\nB Y\nB Z\nC X\nC Y\nC Z"))
+    expect($this->service->calculateScoreFromHandList("A X\nA Y\nA Z\nB X\nB Y\nB Z\nC X\nC Y\nC Z"))
         ->toBeInt()
         ->toEqual(45);
 });
@@ -124,8 +122,7 @@ it('picks a second hand according to first hand and win, lose or draw status', f
     WinLoseDrawEnum $handOutcome,
     RockPaperScissorsEnum $expectedHand
 ) {
-    $dayTwoService = new DayTwoService();
-    expect($dayTwoService->findHandForOutcome($opponentsHand, $handOutcome))
+    expect($this->service->findHandForOutcome($opponentsHand, $handOutcome))
         ->toEqual($expectedHand);
 })->with([
     [RockPaperScissorsEnum::Rock, WinLoseDrawEnum::Win, RockPaperScissorsEnum::Paper],
@@ -148,8 +145,7 @@ it('parses the code into a hand and outcome', function (
     RockPaperScissorsEnum $expectedOpponentsHand,
     WinLoseDrawEnum $expectedOutcome
 ) {
-    $dayTwoService = new DayTwoService();
-    expect($dayTwoService->parseHandOutcomeCodes($inputCodes))
+    expect($this->service->parseHandOutcomeCodes($inputCodes))
         ->toBeInstanceOf(HandOutcomeDTO::class)
         ->opponentsHand->toEqual($expectedOpponentsHand)
         ->handOutcome->toEqual($expectedOutcome);
@@ -173,9 +169,8 @@ it('calculates the score based on hand one and a winning scenario', function (
     WinLoseDrawEnum $handOutcome,
     int $expectedScore
 ) {
-    $dayTwoService = new DayTwoService();
     $handOutcomeDTO = new HandOutcomeDTO($opponentsHand, $handOutcome);
-    expect($dayTwoService->calculateScoreFromHandOutcome($handOutcomeDTO))
+    expect($this->service->calculateScoreFromHandOutcome($handOutcomeDTO))
         ->toBeInt()
         ->toEqual($expectedScore);
 })->with([
@@ -193,8 +188,7 @@ it('calculates the score based on hand one and a winning scenario', function (
 ]);
 
 it('calculates the total scores for a list of hands and outcomes', function () {
-    $dayTwoService = new DayTwoService();
-    expect($dayTwoService->calculateScoreFromHandAndOutcomeList("A X\nA Y\nA Z\nB X\nB Y\nB Z\nC X\nC Y\nC Z"))
+    expect($this->service->calculateScoreFromHandAndOutcomeList("A X\nA Y\nA Z\nB X\nB Y\nB Z\nC X\nC Y\nC Z"))
         ->toBeInt()
         ->toEqual(45);
 });

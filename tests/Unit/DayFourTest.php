@@ -6,14 +6,14 @@ use App\Domain\DayFour\DTO\LeftRightRangesDTO;
 use App\Domain\DayFour\DTO\SectionRangeDTO;
 use App\Domain\DayFour\Services\DayFourService;
 
-beforeEach(fn () => $this->dayFourService = new DayFourService());
+beforeEach(fn () => $this->service = new DayFourService());
 
 it('splits a string into the correct start and end sections', function (
     string $range,
     int $expectedStartSection,
     int $expectedEndSection,
 ) {
-    expect($this->dayFourService->splitRanges($range))
+    expect($this->service->splitRanges($range))
         ->toBeInstanceOf(SectionRangeDTO::class)
         ->startSection->toBeInt()->toEqual($expectedStartSection)
         ->endSection->toBeInt()->toEqual($expectedEndSection);
@@ -55,7 +55,7 @@ it('finds the biggest range of two given ranges', function (
 ) {
     $rangeLeft = new SectionRangeDTO($leftStart, $leftEnd);
     $rangeRight = new SectionRangeDTO($rightStart, $rightEnd);
-    expect($this->dayFourService->findBiggestOf($rangeLeft, $rangeRight))
+    expect($this->service->findBiggestOf($rangeLeft, $rangeRight))
         ->toBeInstanceOf(SectionRangeDTO::class)
         ->startSection->toBeInt()->toEqual($expectedStart)
         ->endSection->toBeInt()->toEqual($expectedEnd);
@@ -75,7 +75,7 @@ it('finds the smallest range of two given ranges', function (
 ) {
     $rangeLeft = new SectionRangeDTO($leftStart, $leftEnd);
     $rangeRight = new SectionRangeDTO($rightStart, $rightEnd);
-    expect($this->dayFourService->findSmallestOf($rangeLeft, $rangeRight))
+    expect($this->service->findSmallestOf($rangeLeft, $rangeRight))
         ->toBeInstanceOf(SectionRangeDTO::class)
         ->startSection->toBeInt()->toEqual($expectedStart)
         ->endSection->toBeInt()->toEqual($expectedEnd);
@@ -92,7 +92,7 @@ it('splits two ranges into separate instances', function (
     int $expectedRangeStart,
     int $expectedRangeEnd,
 ) {
-    expect($this->dayFourService->splitMultipleRanges($ranges))
+    expect($this->service->splitMultipleRanges($ranges))
         ->toBeInstanceOf(LeftRightRangesDTO::class)
         ->leftRange->toBeInstanceOf(SectionRangeDTO::class)
         ->leftRange->startSection->toEqual($expectedContainerStart)
@@ -109,7 +109,7 @@ it('takes a list of ranges and calculates how many are contained', function (
     string $ranges,
     int $expectedCount,
 ) {
-    expect($this->dayFourService->calculateContainedRanges($ranges))
+    expect($this->service->calculateContainedRanges($ranges))
         ->toBeInt()
         ->toEqual($expectedCount);
 })->with([
@@ -148,7 +148,7 @@ it('takes a list of ranges and calculates how many are overlapped', function (
     string $ranges,
     int $expectedCount,
 ) {
-    expect($this->dayFourService->calculateOverlappedRanges($ranges))
+    expect($this->service->calculateOverlappedRanges($ranges))
         ->toBeInt()
         ->toEqual($expectedCount);
 })->with([
