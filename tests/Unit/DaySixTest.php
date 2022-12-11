@@ -21,6 +21,20 @@ it('slides along a string in batches of 4 characters', function (string $input, 
     ]],
 ]);
 
+it('slides along a string in batches of 14 characters', function (string $input, array $expectedSlides) {
+    expect($this->service->parseIntoMessageBatches($input))
+        ->toBeInstanceOf(Collection::class)
+        ->toMatchArray($expectedSlides);
+})->with([
+    [
+        'abcdefghijklmnop', [
+            [1 => 'a', 2 => 'b', 3 => 'c', 4 => 'd', 5 => 'e', 6 => 'f', 7 => 'g', 8 => 'h', 9 => 'i', 10 => 'j', 11 => 'k', 12 => 'l', 13 => 'm', 14 => 'n'],
+            [2 => 'b', 3 => 'c', 4 => 'd', 5 => 'e', 6 => 'f', 7 => 'g', 8 => 'h', 9 => 'i', 10 => 'j', 11 => 'k', 12 => 'l', 13 => 'm', 14 => 'n', 15 => 'o'],
+            [3 => 'c', 4 => 'd', 5 => 'e', 6 => 'f', 7 => 'g', 8 => 'h', 9 => 'i', 10 => 'j', 11 => 'k', 12 => 'l', 13 => 'm', 14 => 'n', 15 => 'o', 16 => 'p'],
+        ],
+    ],
+]);
+
 it('identifies a batch with completely unique letters', function (Collection $batch, bool $expectedMatch) {
     expect($this->service->hasUniqueCharacters($batch))
         ->toBeBool()

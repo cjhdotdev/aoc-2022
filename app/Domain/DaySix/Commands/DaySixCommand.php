@@ -34,6 +34,9 @@ class DaySixCommand extends BaseCommand
         $this->output->info(sprintf('The position of the start-of-packet marker is: %d',
             $daySixService->findFirstUniqueBatch($messengerInput)
         ));
+        $this->output->info(sprintf('The position of the start-of-message marker is: %d',
+            $daySixService->findFirstUniqueMessageBatch($messengerInput)
+        ));
 
         return self::SUCCESS;
     }

@@ -22,6 +22,21 @@ class DaySixService
         );
     }
 
+    public function findFirstUniqueMessageBatch(string $input): int
+    {
+        /** @var Collection<int, string> $firstUniqueBatch */
+        $firstUniqueBatch = $this
+            ->parseIntoMessageBatches($input)
+            ->skipUntil(fn ($batch) => $this->hasUniqueCharacters($batch))
+            ->first();
+
+        return intval(
+            $firstUniqueBatch
+                ->keys()
+                ->last()
+        );
+    }
+
     /**
      * @param  string  $input
      * @return Collection<int, Collection>
@@ -32,6 +47,18 @@ class DaySixService
             ->split('//')
             ->filter()
             ->sliding(4);
+    }
+
+    /**
+     * @param  string  $input
+     * @return Collection<int, Collection>
+     */
+    public function parseIntoMessageBatches(string $input): Collection
+    {
+        return Str::of($input)
+            ->split('//')
+            ->filter()
+            ->sliding(14);
     }
 
     /**

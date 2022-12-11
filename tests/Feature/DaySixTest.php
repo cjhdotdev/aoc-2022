@@ -15,9 +15,10 @@ it('throws an exception if the file does not exist', function () {
 
 it('finds the crates on the top of each stack after movements', function () {
     Storage::fake('local');
-    Storage::put('messenger.txt', 'abababababababdebabababa');
+    Storage::put('messenger.txt', 'abababababababdebabababacdefghijklmnopabababab');
 
     expect($this->artisan('aoc:day-06 messenger.txt'))
         ->assertSuccessful()
-        ->expectsOutputToContain('The position of the start-of-packet marker is: 16');
+        ->expectsOutputToContain('The position of the start-of-packet marker is: 16')
+        ->expectsOutputToContain('The position of the start-of-message marker is: 36');
 });
