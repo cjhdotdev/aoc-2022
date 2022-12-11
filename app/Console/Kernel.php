@@ -28,12 +28,12 @@ class Kernel extends ConsoleKernel
     protected function commands(): void
     {
         $this->load([
-            app_path('Domain/DayOne/Commands'),
-            app_path('Domain/DayTwo/Commands'),
-            app_path('Domain/DayThree/Commands'),
-            app_path('Domain/DayFour/Commands'),
-            app_path('Domain/DayFive/Commands'),
-            app_path('Domain/DaySix/Commands'),
+            app_path('Domain/Day01/Commands'),
+            app_path('Domain/Day02/Commands'),
+            app_path('Domain/Day03/Commands'),
+            app_path('Domain/Day04/Commands'),
+            app_path('Domain/Day05/Commands'),
+            app_path('Domain/Day06/Commands'),
         ]);
 
         require base_path('routes/console.php');
