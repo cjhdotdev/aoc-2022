@@ -15,9 +15,10 @@ it('throws an exception if the file does not exist', function () {
 
 it('calculates all directories under 10000', function () {
     Storage::fake('local');
-    Storage::put('filesystem.txt', "$ cd testing\ndir folderOne\ndir folderTwo\n100001 fileOne\n$ cd folderOne\n$ ls\n1001 fileTwo\n1003 fileThree\ndir folderThree\n$ cd folderThree\n$ ls\n1004 fileFour\n$ cd ..\n$ cd ..\n$ cd folderTwo\n$ ls\n200001 fileFive");
+    Storage::put('filesystem.txt', "$ cd testing\ndir folderOne\ndir folderTwo\n100001 fileOne\n$ cd folderOne\n$ ls\n1001 fileTwo\n1003 fileThree\ndir folderThree\n$ cd folderThree\n$ ls\n1004 fileFour\n$ cd ..\n$ cd ..\n$ cd folderTwo\n$ ls\n29100001 fileFive");
 
     expect($this->artisan('aoc:day-07 filesystem.txt'))
         ->assertSuccessful()
-        ->expectsOutputToContain('Total size of all directories under 100000 is: 4012');
+        ->expectsOutputToContain('Total size of all directories under 100000 is: 4012')
+        ->expectsOutputToContain('Size of smallest directory to free up space: 29100001');
 });

@@ -5,8 +5,31 @@ namespace Tests\Unit;
 use App\Domain\Day07\DTO\DirectoryDTO;
 use App\Domain\Day07\Enums\LineEnum;
 use App\Domain\Day07\Services\DaySevenService;
+use Illuminate\Support\Collection;
 
 beforeEach(fn () => $this->service = new DaySevenService());
+
+function prepopulateDirectories(DaySevenService $service)
+{
+    $service->processCommandLine('$ cd folderOne');
+    $service->processCommandLine('$ ls');
+    $service->processCommandLine('1001 fileOne.txt');
+    $service->processCommandLine('dir folderOneOne');
+    $service->processCommandLine('dir folderOneTwo');
+    $service->processCommandLine('$ cd folderOneOne');
+    $service->processCommandLine('$ ls');
+    $service->processCommandLine('101 fileOneOne.txt');
+    $service->processCommandLine('202 fileOneTwo.txt');
+    $service->processCommandLine('$ cd ..');
+    $service->processCommandLine('$ cd folderOneTwo');
+    $service->processCommandLine('$ ls');
+    $service->processCommandLine('401 fileTwoOne.txt');
+    $service->processCommandLine('$ cd ..');
+    $service->processCommandLine('$ cd ..');
+    $service->processCommandLine('$ cd folderTwo');
+    $service->processCommandLine('$ ls');
+    $service->processCommandLine('505 fileTwo.txt');
+}
 
 it('creates a directory instance', function () {
     $directory = new DirectoryDTO('testing');
@@ -98,26 +121,34 @@ it('performs correct actions during a directory listing', function () {
 });
 
 it('can calculate the total size of all directories below a certain threshold', function () {
-    $this->service->processCommandLine('$ cd folderOne');
-    $this->service->processCommandLine('$ ls');
-    $this->service->processCommandLine('1001 fileOne.txt');
-    $this->service->processCommandLine('dir folderOneOne');
-    $this->service->processCommandLine('dir folderOneTwo');
-    $this->service->processCommandLine('$ cd folderOneOne');
-    $this->service->processCommandLine('$ ls');
-    $this->service->processCommandLine('101 fileOneOne.txt');
-    $this->service->processCommandLine('202 fileOneTwo.txt');
-    $this->service->processCommandLine('$ cd ..');
-    $this->service->processCommandLine('$ cd folderOneTwo');
-    $this->service->processCommandLine('$ ls');
-    $this->service->processCommandLine('401 fileTwoOne.txt');
-    $this->service->processCommandLine('$ cd ..');
-    $this->service->processCommandLine('$ cd ..');
-    $this->service->processCommandLine('$ cd folderTwo');
-    $this->service->processCommandLine('$ ls');
-    $this->service->processCommandLine('505 fileTwo.txt');
+    prepopulateDirectories($this->service);
 
     expect($this->service->calculateDirectoriesUnder(1000))
         ->toBeInt()
         ->toEqual(1209);
+});
+
+it('finds all the folders total sizes', function () {
+    prepopulateDirectories($this->service);
+
+    expect($this->service->getAllDirectorySizes())
+        ->toBeInstanceOf(Collection::class)
+        ->sortDesc()->values()->toMatchArray([2210, 1705, 505, 401, 303]);
+});
+
+it('calculates remaining space', function () {
+    prepopulateDirectories($this->service);
+
+    expect($this->service->calculateFreeSpace())
+        ->toBeInt()
+        ->toEqual(DaySevenService::SPACE_TOTAL - 2210);
+});
+
+it('finds the size of the first directory under a given threshold', function () {
+    prepopulateDirectories($this->service);
+
+    expect($this->service)
+        ->findFirstDirectoryBiggerThan(300)->toBeInt()->toEqual(303)
+        ->findFirstDirectoryBiggerThan(500)->toBeInt()->toEqual(505)
+        ->findFirstDirectoryBiggerThan(2000)->toBeInt()->toEqual(2210);
 });

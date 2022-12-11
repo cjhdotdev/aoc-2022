@@ -4,41 +4,66 @@ namespace App\Domain\Day07\Services;
 
 use App\Domain\Day07\DTO\DirectoryDTO;
 use App\Domain\Day07\Enums\LineEnum;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
 class DaySevenService
 {
+    const SPACE_TOTAL = 70000000;
+
+    const SPACE_REQUIRED = 30000000;
+
     public function __construct(
         public DirectoryDTO $currentDirectory = new DirectoryDTO(''),
     ) {
         //
     }
 
+    public function parseInputAndFindFreeSpaceRemoval(string $commandLines): int
+    {
+        $this->parseCommandLinesInput($commandLines);
+
+        return $this->findFirstDirectoryBiggerThan(self::SPACE_REQUIRED - $this->calculateFreeSpace());
+    }
+
     public function parseInputAndCalculateUnder(string $commandLines, int $threshold): int
     {
-        Str::of($commandLines)
-            ->explode(PHP_EOL)
-            ->filter()
-            ->each(fn ($line) => $this->processCommandLine(strval($line)));
+        $this->parseCommandLinesInput($commandLines);
 
         return $this->calculateDirectoriesUnder($threshold);
     }
 
     public function calculateDirectoriesUnder(int $threshold): int
     {
-        $directory = $this->identifyDirectory('/');
-
-        return $this->calculateChildDirectoriesUnder($directory, $threshold);
+        return $this->calculateChildDirectoriesUnder($this->identifyDirectory('/'), $threshold);
     }
 
-    private function calculateChildDirectoriesUnder(DirectoryDTO $directory, int $threshold): int
+    /**
+     * @return Collection<int, int>
+     */
+    public function getAllDirectorySizes(): Collection
     {
-        $totalSize = 0;
-        if ($directory->childDirectories->isNotEmpty()) {
-            $totalSize = $directory->childDirectories->reduce(fn ($total, $dir) => $total + $this->calculateChildDirectoriesUnder($dir, $threshold), 0);
-        }
+        return $this
+            ->getDirectorySize($this->identifyDirectory('/'), new Collection())
+            ->flatten()
+            ->values()
+            ->map(fn ($value) => intval($value));
+    }
 
-        return $totalSize + ($directory->getTotalSize() < $threshold ? $directory->getTotalSize() : 0);
+    public function calculateFreeSpace(): int
+    {
+        return intval(self::SPACE_TOTAL - $this->getAllDirectorySizes()->sortDesc()->first());
+    }
+
+    public function findFirstDirectoryBiggerThan(int $threshold): int
+    {
+        $directories = $this->getAllDirectorySizes()->sort();
+
+        return intval(
+            $directories
+                ->skipUntil(fn ($value) => $value >= $threshold)
+                ->first()
+        );
     }
 
     public function processCommandLine(string $commandLine): void
@@ -109,5 +134,37 @@ class DaySevenService
         }
 
         return $this->currentDirectory->addDirectory($directoryName);
+    }
+
+    private function getDirectorySize(DirectoryDTO $directory, Collection $sizeCollection): Collection
+    {
+        if ($directory->childDirectories->isNotEmpty()) {
+            $sizeCollection = $sizeCollection->union($directory->childDirectories->map(fn ($dir
+            ) => $this->getDirectorySize($dir, $sizeCollection)));
+        }
+
+        return $sizeCollection->union([$directory->directoryName => $directory->getTotalSize()]);
+    }
+
+    private function parseCommandLinesInput(string $commandLines): void
+    {
+        Str::of($commandLines)
+            ->explode(PHP_EOL)
+            ->filter()
+            ->each(fn ($line) => $this->processCommandLine(strval($line)));
+    }
+
+    private function calculateChildDirectoriesUnder(DirectoryDTO $directory, int $threshold): int
+    {
+        $totalSize = 0;
+
+        if ($directory->childDirectories->isNotEmpty()) {
+            $totalSize = $directory->childDirectories->reduce(
+                fn ($total, $dir) => $total + $this->calculateChildDirectoriesUnder($dir, $threshold),
+                0
+            );
+        }
+
+        return $totalSize + ($directory->getTotalSize() < $threshold ? $directory->getTotalSize() : 0);
     }
 }

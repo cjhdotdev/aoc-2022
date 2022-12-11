@@ -35,6 +35,10 @@ class DaySevenCommand extends BaseCommand
             $daySevenService->parseInputAndCalculateUnder($commandLine, 100000),
         ));
 
+        $this->output->info(sprintf('Size of smallest directory to free up space: %d',
+            $daySevenService->parseInputAndFindFreeSpaceRemoval($commandLine)
+        ));
+
         return self::SUCCESS;
     }
 }
