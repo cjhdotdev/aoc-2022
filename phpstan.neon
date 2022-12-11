@@ -12,3 +12,4 @@ parameters:
     ignoreErrors:
     excludePaths:
         - bootstrap/cache
+    checkGenericClassInNonGenericObjectType: false
