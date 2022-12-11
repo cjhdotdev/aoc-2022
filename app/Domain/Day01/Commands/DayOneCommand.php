@@ -5,7 +5,7 @@ namespace App\Domain\Day01\Commands;
 use App\Console\BaseCommand;
 use App\Domain\Day01\Services\DayOneService;
 
-class Day01Command extends BaseCommand
+class DayOneCommand extends BaseCommand
 {
     /**
      * The name and signature of the console command.
