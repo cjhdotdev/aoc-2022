@@ -35,9 +35,9 @@ class DayEightCommand extends BaseCommand
             $dayEightService->calculateVisibleTreesFromSquare($treeSquare),
         ));
 
-//        $this->output->info(sprintf('Size of smallest directory to free up space: %d',
-//            $daySevenService->parseInputAndFindFreeSpaceRemoval($commandLine)
-//        ));
+        $this->output->info(sprintf('The best scenic score for a tree is: %d',
+            $dayEightService->calculateBestScoreFromSquare($treeSquare),
+        ));
 
         return self::SUCCESS;
     }

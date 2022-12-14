@@ -15,6 +15,13 @@ class DayEightService
             ->countVisible();
     }
 
+    public function calculateBestScoreFromSquare(string $treeSquare): int
+    {
+        return $this
+            ->parseTreeSquare($treeSquare)
+            ->findBestScore();
+    }
+
     /**
      * @param  string  $trees
      * @return Collection<int, int>

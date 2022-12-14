@@ -19,5 +19,6 @@ it('calculates the number of trees visible', function () {
 
     expect($this->artisan('aoc:day-08 trees.txt'))
         ->assertSuccessful()
-        ->expectsOutputToContain('The total number of visible trees is: 20');
+        ->expectsOutputToContain('The total number of visible trees is: 20')
+        ->expectsOutputToContain('The best scenic score for a tree is: 8');
 });

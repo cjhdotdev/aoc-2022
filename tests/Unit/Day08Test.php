@@ -26,8 +26,8 @@ it('can determine if a tree is visible given x and y co-ordinates', function (
     int $positionY,
     bool $expectedVisibility,
 ) {
-    $treeSquare = $this->service->parseTreeSquare($treeSquare);
-    expect($treeSquare->isVisible($positionX, $positionY))
+    $square = $this->service->parseTreeSquare($treeSquare);
+    expect($square->isVisible($positionX, $positionY))
         ->toBeBool()
         ->toEqual($expectedVisibility);
 })->with([
@@ -42,12 +42,39 @@ it('counts the number of visible trees in a tree square', function (
     string $treeSquare,
     int $expectedVisibleTrees,
 ) {
-    $treeSquare = $this->service->parseTreeSquare($treeSquare);
-    expect($treeSquare->countVisible())
+    $square = $this->service->parseTreeSquare($treeSquare);
+    expect($square->countVisible())
         ->toBeInt()
         ->toEqual($expectedVisibleTrees);
 })->with([
     ["9999\n9119\n9119\n9999", 12],
     ["1111\n1991\n1991\n1111", 16],
     ["9199\n9219\n9119\n9999", 13],
+]);
+
+it('calculates the scenic score for a given tree', function (
+    string $treeSquare,
+    int $positionX,
+    int $positionY,
+    int $expectedScore,
+) {
+    $square = $this->service->parseTreeSquare($treeSquare);
+    expect($square->calculateScenicScore($positionX, $positionY))
+        ->toBeInt()
+        ->toEqual($expectedScore);
+})->with([
+    ["30373\n25512\n65332\n33549\n35390", 2, 1, 4],
+    ["30373\n25512\n65332\n33549\n35390", 2, 3, 8],
+]);
+
+it('finds the best scenic score in a tree square', function (
+    string $treeSquare,
+    int $expectedScore,
+) {
+    $square = $this->service->parseTreeSquare($treeSquare);
+    expect($square->findBestScore())
+        ->toBeInt()
+        ->toEqual($expectedScore);
+})->with([
+    ["30373\n25512\n65332\n33549\n35390", 8],
 ]);
