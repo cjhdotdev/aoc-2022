@@ -13,7 +13,7 @@ it('throws an exception if the file does not exist', function () {
         ->assertFailed();
 })->throws(\RuntimeException::class, 'The specified file does not exist');
 
-it('calculates the number of trees visible', function () {
+it('calculates the position of the rope tail after moves', function () {
     Storage::fake('local');
     Storage::put('moves.txt', "R 4\nU 4\nL 3\nD 1\nR 4\nD 1\nL 5\nR 2");
 
